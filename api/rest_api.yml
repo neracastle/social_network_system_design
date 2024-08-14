@@ -51,6 +51,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
     get:
       tags:
         - Пост
@@ -71,6 +73,21 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: offset
+          in: query
+          type: integer
+          required: false
+          default: 0
+          minimum: 0
+          description: Смещение кол-ва элементов от начала списка
+        - name: limit
+          in: query
+          type: integer
+          required: false
+          default: 10
+          minimum: 1
+          maximum: 20
+          description: Кол-во элементов для выдачи
       responses:
         '200':
           description: Успешное получение
@@ -86,6 +103,8 @@ paths:
             application/json:
               schema:
                   $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
   /posts/{postId}:
     patch:
       tags:
@@ -120,7 +139,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /photo:
+        '500':
+          description: Внутренняя ошибка сервера
+  /photos:
     post:
       tags:
         - Фотография
@@ -145,7 +166,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /photo/{photoId}:
+        '500':
+          description: Внутренняя ошибка сервера
+  /photos/{photoId}:
     delete:
       tags:
         - Фотография
@@ -164,6 +187,8 @@ paths:
           description: successful operation
         '400':
           description: Ошибка удаления
+        '500':
+          description: Внутренняя ошибка сервера
   /comments:
     post:
       tags:
@@ -198,7 +223,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /places/by_name:
+        '500':
+          description: Внутренняя ошибка сервера
+  /places:
     get:
       tags:
         - Места
@@ -208,9 +235,32 @@ paths:
         - name: name
           in: query
           description: название места
-          required: true
+          required: false
           schema:
             type: string
+        - name: top
+          in: query
+          description: Сортирует список мест по кол-ву постов в них
+          required: false
+          schema:
+            type: integer
+            format: uint8
+        - name: offset
+          in: query
+          type: integer
+          required: false
+          default: 0
+          minimum: 0
+          description: Смещение кол-ва элементов от начала списка
+        - name: limit
+          in: query
+          type: integer
+          required: false
+          default: 10
+          minimum: 1
+          maximum: 20
+          description: Кол-во элементов для выдачи
+
       responses:
         '200':
           description: Успешное получение
@@ -226,33 +276,30 @@ paths:
             application/json:
               schema:
                   $ref: '#/components/schemas/ErrorResponse'
-  /places/top:
-    get:
-      tags:
-        - Места
-      summary: Популярные места
-      description: Возвращает список мест по кол-ву постов в них
-      responses:
-        '200':
-          description: Успешное получение
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Place'
-        '400':
-          description: Ошибка запроса
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/ErrorResponse'
-  /ribbon:
+        '500':
+          description: Внутренняя ошибка сервера
+  /feed:
     get:
       tags:
         - Лента
       summary: Лента постов
       description: ''
+      parameters:
+        - name: offset
+          in: query
+          type: integer
+          required: false
+          default: 0
+          minimum: 0
+          description: Смещение кол-ва элементов от начала списка
+        - name: limit
+          in: query
+          type: integer
+          required: false
+          default: 10
+          minimum: 1
+          maximum: 20
+          description: Кол-во элементов для выдачи
       responses:
         '200':
           description: Успешное получение
@@ -268,6 +315,8 @@ paths:
             application/json:
               schema:
                   $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
 components:
   schemas:
     Post:
@@ -338,23 +387,6 @@ components:
         name:
           type: string
           example: Санкт-Петербург
-    Ribbon:
-      type: object
-      properties:
-        user_id:
-          type: integer
-          format: int64
-          example: 10
-          readOnly: true
-        post_id:
-          type: integer
-          format: int64
-          example: 543
-          readOnly: true
-        photo_id:
-          type: string
-          format: uuid
-          example: '0a1b0b87-b404-48f6-89c6-11285f4aeea5'
     ErrorResponse:
       type: object
       properties:
