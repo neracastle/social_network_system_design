@@ -1,0 +1,397 @@
+openapi: 3.0.3
+info:
+  title: Соцсеть для путешественников API
+  description: |-
+    Здесь представлено описание всех методов клиентского API
+  version: 1.0.0
+servers:
+  - url: https://someurl/api/v1
+tags:
+  - name: Пост
+    description: Все для работы с постами (размещение, просмотр)
+  - name: Фотография
+    description: Работа с медиа
+  - name: Комментарий
+    description: Операции с комментариями к постам
+  - name: Места
+    description: Поиск популярных мест, просмотр постов с ними связанных
+  - name: Лента
+    description: Лента пользователя с постами тех, на кого он подписан
+paths:
+  /posts:
+    post:
+      tags:
+        - Пост
+      summary: Создание поста
+      description: Размещение нового поста клиентом
+      requestBody:
+        description: Размещение поста
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Post'
+                - type: object
+                  properties:
+                    photo_id:
+                      type: array
+                      items:
+                        format: uuid
+        required: true
+      responses:
+        '201':
+          description: Успешное создание
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '200':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+    get:
+      tags:
+        - Пост
+      summary: Список постов
+      description: Возвращает список постов по id пользователя или места. Если не задано, возвращает для текущего пользователя
+      parameters:
+        - name: user_id
+          in: query
+          description: ID пользователя
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: place_id
+          in: query
+          description: ID места
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: offset
+          in: query
+          type: integer
+          required: false
+          default: 0
+          minimum: 0
+          description: Смещение кол-ва элементов от начала списка
+        - name: limit
+          in: query
+          type: integer
+          required: false
+          default: 10
+          minimum: 1
+          maximum: 20
+          description: Кол-во элементов для выдачи
+      responses:
+        '200':
+          description: Успешное получение
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+  /posts/{postId}:
+    patch:
+      tags:
+        - Пост
+      summary: Изменение поста
+      description: Изменение поста по его Id
+      parameters:
+        - name: postId
+          in: path
+          description: ID поста
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Обновляет существующий пост
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Ошибка обновления
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+  /photos:
+    post:
+      tags:
+        - Фотография
+      summary: Загрузка фото на сервер
+      description: Загружает фото на сервер
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+        '400':
+          description: Ошибка загрузки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+  /photos/{photoId}:
+    delete:
+      tags:
+        - Фотография
+      summary: Удаляет изображение с сервера
+      description: ''
+      parameters:
+        - name: photoId
+          in: path
+          description: Id изображения
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Ошибка удаления
+        '500':
+          description: Внутренняя ошибка сервера
+  /comments:
+    post:
+      tags:
+        - Комментарий
+      summary: Добавление комментария
+      description: Размещение нового комментария под постом
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  properties:
+                    post_id:
+                      type: integer
+                      format: int64
+                      example: 10
+                - $ref: '#/components/schemas/Comment'
+                
+        required: true
+      responses:
+        '201':
+          description: Успешное создание
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '200':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+  /places:
+    get:
+      tags:
+        - Места
+      summary: Места путешествий
+      description: Возвращает список мест по названию
+      parameters:
+        - name: name
+          in: query
+          description: название места
+          required: false
+          schema:
+            type: string
+        - name: top
+          in: query
+          description: Сортирует список мест по кол-ву постов в них
+          required: false
+          schema:
+            type: integer
+            format: uint8
+        - name: offset
+          in: query
+          type: integer
+          required: false
+          default: 0
+          minimum: 0
+          description: Смещение кол-ва элементов от начала списка
+        - name: limit
+          in: query
+          type: integer
+          required: false
+          default: 10
+          minimum: 1
+          maximum: 20
+          description: Кол-во элементов для выдачи
+
+      responses:
+        '200':
+          description: Успешное получение
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Place'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+  /feed:
+    get:
+      tags:
+        - Лента
+      summary: Лента постов
+      description: ''
+      parameters:
+        - name: offset
+          in: query
+          type: integer
+          required: false
+          default: 0
+          minimum: 0
+          description: Смещение кол-ва элементов от начала списка
+        - name: limit
+          in: query
+          type: integer
+          required: false
+          default: 10
+          minimum: 1
+          maximum: 20
+          description: Кол-во элементов для выдачи
+      responses:
+        '200':
+          description: Успешное получение
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+components:
+  schemas:
+    Post:
+      type: object
+      required:
+      - description
+      - photoIds
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+          readOnly: true
+        user_id:
+          type: integer
+          format: int64
+          example: 505
+          readOnly: true
+        place_id:
+          type: integer
+          format: int64
+          example: 2543
+        description:
+          type: string
+          example: some text
+        photoIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/Photo'
+          readOnly: true
+    Comment:
+      type: object
+      required:
+      - message
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+          readOnly: true
+        message:
+          type: string
+          example: some text
+    Photo:
+      type: object
+      required:
+      - id
+      - url
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '0a1b0b87-b404-48f6-89c6-11285f4aeea5'
+        url:
+          type: string
+          example: /some/path/to/image
+          readOnly: true
+    Place:
+      type: object
+      required:
+      - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+          readOnly: true
+        name:
+          type: string
+          example: Санкт-Петербург
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
