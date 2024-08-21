@@ -65,6 +65,14 @@
   <img src="images/places.svg" />
 </p>
 
+<p align="center">
+    </br><b>Level 2.</b> Диаграмма системы Комментарии</br></br>
+</p>
+
+<p align="center">
+  <img src="images/comments.svg" />
+</p>
+
 ### Базовые расчеты нагрузки:
 RPS (публикация поста)
 ```
