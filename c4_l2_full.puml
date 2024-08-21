@@ -1,0 +1,53 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define COMMICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons
+
+!include DEVICONS/postgresql.puml
+!include DEVICONS/redis.puml
+!include COMMICONS/common.puml
+!include COMMICONS/font-awesome-6/database.puml
+
+Person(user, "Пользователь")
+System(api, "API", "Gateway")
+Rel(user, api, "Вызов", "REST")
+ContainerQueue(evQ, "Очередь событий", "Kafka")
+
+System_Boundary(c1, "Посты", "") {
+Container(postSrv, "Posts Service", "Go", "Создание и редактирование постов, фото")
+ContainerDb(postDb, "Database", "PgSQL", "Хранение постов", $sprite="postgresql")
+ContainerDb(imageDb, "Database", "Blob", "Хранение фото", $sprite="database")
+Rel(api, postSrv, "Публикация поста", "")
+Rel(postSrv, postDb, "Сохранение / выдача постов", "")
+Rel(postSrv, imageDb, "Сохранение / выдача медиа", "")
+Rel(postSrv, evQ, "Новые посты", "")
+}
+
+System_Boundary(c2, "Комментарии", "") {
+Container(commentSrv, "Comments Service", "Go", "Добавление и чтение комментариев")
+ContainerDb(commentDb, "Database", "PgSQL", "Хранение комментариев", $sprite="postgresql")
+Rel(api, commentSrv, "Добавление / просмотр комментариев", "")
+Rel(commentSrv, commentDb, "Добавление / просмотр комментариев", "")
+}
+
+System_Boundary(c3, "Лента", "") {
+Container(feedCacheSrv, "Feed Cache Service", "Go", "Пересчет кэша")
+Container(feedSrv, "Feed Service", "Go", "Отображение ленты")
+ContainerDb(feedCacheDb, "Cache", "Redis", "Хранение ленты пользователей (20 постов)", $sprite="redis")
+Rel(api, feedSrv, "Просмотр ленты", "")
+Rel(feedSrv, feedCacheDb, "Чтение ленты", "")
+Rel(feedSrv, postDb, "Чтение старой ленты", "")
+Rel(evQ, feedCacheSrv, "Получение новых постов", "")
+Rel(feedCacheSrv, feedCacheDb, "Обновление ленты пользователя", "")
+}
+
+System_Boundary(c4, "Лента", "") {
+Container(placesSrv, "Places Service", "Go", "Поиск популярных мест")
+ContainerDb(placeDb, "Database", "PgSQL", "Хранение мест и их популярности", $sprite="postgresql")
+ContainerDb(placeSearchDb, "Database", "ElasticSearch", "Хранение мест", $sprite="database")
+Rel(api, placesSrv, "Поиск мест", "")
+Rel(placesSrv, placeDb, "Поиск мест / обновление рейтинга", "")
+Rel(placesSrv, placeSearchDb, "Поиск мест", "")
+Rel(evQ, placesSrv, "Получение новых постов", "")
+}
+@enduml
