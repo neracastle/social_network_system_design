@@ -41,6 +41,10 @@
   <img src="images/level1.svg" />
 </p>
 
+<p align="center">
+  <img src="images/level2.svg" />
+</p>
+
 ### Базовые расчеты нагрузки:
 RPS (публикация поста)
 ```
