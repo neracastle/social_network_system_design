@@ -49,6 +49,14 @@
   <img src="images/level2_posts.svg" />
 </p>
 
+<p align="center">
+    </br><b>Level 2.</b> Диаграмма системы Лента</br></br>
+</p>
+
+<p align="center">
+  <img src="images/c4_l2_feed.svg" />
+</p>
+
 ### Базовые расчеты нагрузки:
 RPS (публикация поста)
 ```
