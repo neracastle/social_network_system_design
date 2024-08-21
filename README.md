@@ -42,6 +42,10 @@
 </p>
 
 <p align="center">
+    </br><b>Level 2.</b> System context diagram</br></br>
+</p>
+
+<p align="center">
   <img src="images/level2.svg" />
 </p>
 
