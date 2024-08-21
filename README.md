@@ -28,6 +28,18 @@
 - Тайминги:
     - Отображение ленты не более 1 сек
     - Поиск мест не более 3 сек
+ 
+## Design overview
+
+Для описания системы используется [C4 model](https://c4model.com/).
+
+<p align="center">
+    </br><b>Level 1.</b> System context diagram</br></br>
+</p>
+
+<p align="center">
+  <img src="images/level1.svg" />
+</p>
 
 ### Базовые расчеты нагрузки:
 RPS (публикация поста)
