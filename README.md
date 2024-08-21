@@ -42,11 +42,11 @@
 </p>
 
 <p align="center">
-    </br><b>Level 2.</b> System context diagram</br></br>
+    </br><b>Level 2.</b> Диаграмма системы Постов</br></br>
 </p>
 
 <p align="center">
-  <img src="images/level2.svg" />
+  <img src="images/level2_posts.svg" />
 </p>
 
 ### Базовые расчеты нагрузки:
