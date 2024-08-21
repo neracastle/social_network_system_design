@@ -57,6 +57,14 @@
   <img src="images/c4_l2_feed.svg" />
 </p>
 
+<p align="center">
+    </br><b>Level 2.</b> Диаграмма системы Места</br></br>
+</p>
+
+<p align="center">
+  <img src="images/places.svg" />
+</p>
+
 ### Базовые расчеты нагрузки:
 RPS (публикация поста)
 ```
