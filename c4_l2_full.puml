@@ -14,10 +14,10 @@ Rel(user, api, "Вызов", "REST")
 ContainerQueue(evQ, "Очередь событий", "Kafka")
 
 System_Boundary(c1, "Посты", "") {
-Container(postSrv, "Posts Service", "Go", "Создание и редактирование постов, фото")
+Container(postSrv, "Posts Service", "Go", "Создание и чтение постов, фото")
 ContainerDb(postDb, "Database", "PgSQL", "Хранение постов", $sprite="postgresql")
 ContainerDb(imageDb, "Database", "Blob", "Хранение фото", $sprite="database")
-Rel(api, postSrv, "Публикация поста", "")
+Rel(api, postSrv, "Публикация / чтение постов", "")
 Rel(postSrv, postDb, "Сохранение / выдача постов", "")
 Rel(postSrv, imageDb, "Сохранение / выдача медиа", "")
 Rel(postSrv, evQ, "Новые посты", "")
@@ -41,7 +41,7 @@ Rel(evQ, feedCacheSrv, "Получение новых постов", "")
 Rel(feedCacheSrv, feedCacheDb, "Обновление ленты пользователя", "")
 }
 
-System_Boundary(c4, "Лента", "") {
+System_Boundary(c4, "Места", "") {
 Container(placesSrv, "Places Service", "Go", "Поиск популярных мест")
 ContainerDb(placeDb, "Database", "PgSQL", "Хранение мест и их популярности", $sprite="postgresql")
 ContainerDb(placeSearchDb, "Database", "ElasticSearch", "Хранение мест", $sprite="database")
