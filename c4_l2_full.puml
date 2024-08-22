@@ -9,7 +9,7 @@
 !include COMMICONS/font-awesome-6/database.puml
 
 Person(user, "Пользователь")
-System(api, "API", "Gateway")
+Container(api, "Load Balancer", "Nginx", "Round robin")
 Rel(user, api, "Вызов", "REST")
 ContainerQueue(evQ, "Очередь событий", "Kafka")
 
@@ -37,7 +37,7 @@ ContainerDb(feedCacheDb, "Cache", "Redis", "Хранение ленты поль
 Rel(api, feedSrv, "Просмотр ленты", "")
 Rel(feedSrv, feedCacheDb, "Чтение ленты", "")
 Rel(feedSrv, postDb, "Чтение старой ленты", "")
-Rel(evQ, feedCacheSrv, "Получение новых постов", "")
+Rel(feedCacheSrv, evQ, "Получение новых постов", "")
 Rel(feedCacheSrv, feedCacheDb, "Обновление ленты пользователя", "")
 }
 
@@ -48,6 +48,6 @@ ContainerDb(placeSearchDb, "Database", "ElasticSearch", "Хранение мес
 Rel(api, placesSrv, "Поиск мест", "")
 Rel(placesSrv, placeDb, "Поиск мест / обновление рейтинга", "")
 Rel(placesSrv, placeSearchDb, "Поиск мест", "")
-Rel(evQ, placesSrv, "Получение новых постов", "")
+Rel(placesSrv, evQ, "Получение новых постов", "")
 }
 @enduml
